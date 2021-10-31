@@ -1,0 +1,209 @@
+<html>
+<head>
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    var gainNode = audioCtx.createGain();
+
+    const notes = [
+      { name: 'C4', freq: 261.63, elem: 'c' },
+      { name: 'C#4', freq: 277.18, elem: 'cs' },
+      { name: 'D4', freq: 293.66, elem: 'd' },
+      { name: 'D#4', freq: 311.13, elem: 'ds' },
+      { name: 'E4', freq: 329.63, elem: 'e' },
+      { name: 'F4', freq: 349.23, elem: 'f' },
+      { name: 'F#4', freq: 369.99, elem: 'fs' },
+      { name: 'G4', freq: 392.00, elem: 'g' },
+      { name: 'G#4', freq: 415.30, elem: 'gs' },
+      { name: 'A4', freq: 440.00, elem: 'a' },
+      { name: 'A#4', freq: 466.16, elem: 'as' },
+      { name: 'B4', freq: 493.88, elem: 'b' }
+    ]
+
+    function playNote(note) {
+      oscillator.frequency.value = note.freq;
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+    }
+
+    function play() {
+      if (audioCtx.state !== 'running') {
+        oscillator.start(audioCtx.currentTime);
+        oscillator.type = 'triangle';
+      }
+
+      const firstNote = notes[Math.floor((Math.random() * notes.length))];
+      const secondNote = notes[Math.floor((Math.random() * notes.length))];
+
+      setTimeout(function () {
+        playNote(firstNote);
+        document.getElementsByClassName(firstNote.elem)[0].focus();
+        document.getElementById('info').textContent = "If this is " + firstNote.name;
+      }, 500);
+
+      setTimeout(function () {
+        playNote(secondNote);
+        document.getElementsByClassName(firstNote.elem)[0].blur();
+        document.getElementById('info').textContent += " What is this???";
+      }, 2500);
+
+      setTimeout(function () {
+        gainNode.disconnect(audioCtx.destination);
+      }, 4500);
+
+      let buttons = document.querySelectorAll('.piano');
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", (event) => {
+          if (event.srcElement.classList.contains(secondNote.elem)) {
+            document.getElementById('info').textContent = "That is correct!";
+          } else {
+            document.getElementById('info').textContent = "That is incorrect! Right one was " + secondNote.name;
+          }
+        });
+      });
+    }
+  </script>
+  <style>
+    body {
+      font-size: 25px;
+    }
+
+    .piano {
+      position: relative;
+      display: flex;
+      perspective: 50em;
+      justify-content: center;
+      align-items: center;
+      transform-style: preserve-3d;
+    }
+
+    .white {
+      position: absolute;
+      background: linear-gradient(to bottom, #eee 0%, #fff 100%);
+      width: 2em;
+      height: 12em;
+      border: gray 0.01em solid;
+      transform-style: preserve-3d;
+      transform-origin: top;
+      box-shadow: inset -0.25em -0.25em 1em #fff;
+    }
+
+    .black {
+      position: absolute;
+      background: linear-gradient(45deg, #222 0%, #555 100%);
+      width: 1em;
+      height: 6em;
+      z-index: 1;
+      transform-style: preserve-3d;
+      transform-origin: top;
+      box-shadow: inset -0.125em -0.125em 1em #666;
+    }
+
+    div .white:focus {
+      transform: rotateX(-1deg);
+      background: linear-gradient(to bottom, #fff 0%, #e8e8e8 100%)
+    }
+
+    div .black:focus {
+      background: linear-gradient(to right, #666 0%, #222 100%)
+    }
+
+    .c {
+      position: absolute;
+      top: 0;
+      left: 0em;
+    }
+
+    .cs {
+      position: absolute;
+      top: 0;
+      left: 1.5em;
+    }
+
+    .d {
+      position: absolute;
+      top: 0;
+      left: 2em;
+    }
+
+    .ds {
+      position: absolute;
+      top: 0;
+      left: 3.5em;
+    }
+
+    .e {
+      position: absolute;
+      top: 0;
+      left: 4em;
+    }
+
+    .f {
+      position: absolute;
+      top: 0;
+      left: 6em;
+    }
+
+    .fs {
+      position: absolute;
+      top: 0;
+      left: 7.5em;
+    }
+
+    .g {
+      position: absolute;
+      top: 0;
+      left: 8em;
+    }
+
+    .gs {
+      position: absolute;
+      top: 0;
+      left: 9.5em;
+    }
+
+    .a {
+      position: absolute;
+      top: 0;
+      left: 10em;
+    }
+
+    .as {
+      position: absolute;
+      top: 0;
+      left: 11.5em;
+    }
+
+    .b {
+      position: absolute;
+      top: 0;
+      left: 12em;
+    }
+
+    #info {
+      min-height: 2em;
+      height: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <button onclick="play();">PLAY</button>
+  <div id="info"></div>
+  <div class="piano">
+    <div tabindex="-1" class="c white"></div>
+    <div tabindex="-1" class="cs black"></div>
+    <div tabindex="-1" class="d white"></div>
+    <div tabindex="-1" class="ds black"></div>
+    <div tabindex="-1" class="e white"></div>
+    <div tabindex="-1" class="f white"></div>
+    <div tabindex="-1" class="fs black"></div>
+    <div tabindex="-1" class="g white"></div>
+    <div tabindex="-1" class="gs black"></div>
+    <div tabindex="-1" class="a white"></div>
+    <div tabindex="-1" class="as black"></div>
+    <div tabindex="-1" class="b white"></div>
+  </div>
+</body>
+
+</html>
